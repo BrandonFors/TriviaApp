@@ -1,0 +1,25 @@
+a.button {
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: #007bff; /* Button background color */
+    color: white; /* Text color */
+    text-decoration: none; /* Remove underline */
+    font-size: 16px;
+    font-weight: bold;
+    border-radius: 5px; /* Rounded corners */
+    border: none; /* Remove border */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); /* Add slight shadow */
+    cursor: pointer; /* Change cursor to pointer */
+    text-align: center; /* Center-align text */
+    transition: background-color 0.3s ease, transform 0.2s ease; /* Smooth hover effects */
+  }
+  
+  a.button:hover {
+    background-color: #0056b3; /* Darker shade on hover */
+    transform: scale(1.05); /* Slightly enlarge on hover */
+  }
+  
+  a.button:active {
+    background-color: #004085; /* Even darker shade on click */
+    transform: scale(0.95); /* Slightly shrink on click */
+  }
