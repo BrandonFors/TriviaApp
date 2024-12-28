@@ -1,24 +1,29 @@
 import React, { useEffect, useState } from "react";
+import "./TriviaPage.css";
 
-function QuestionForm(props){
+function QuestionForm(props) {
     const [answer, setAnswer] = useState("");
-    return(
-    <div>
-        <h1>{props.question.question}</h1>
-        {
-            props.question.responses.map((response, index)=>{
+
+    const decodeHtmlEntities = (text) => {
+        const parser = new DOMParser();
+        return parser.parseFromString(text, 'text/html').body.textContent;
+    };
+
+    return (
+        <div>
+            <h1>{decodeHtmlEntities(props.question.question)}</h1>
+            {props.question.responses.map((response, index) => (
                 <button
                     key={index}
-                    onClick={() => setAnswer(answer)}
+                    onClick={() => setAnswer(response)}
                     className={answer === response ? 'selected' : ''}
-                    >
-                    {response}
-                    </button>
-            })       
-        }
-        {answer != "" && <button>{props.buttonText}</button>}
-    </div>
-    )
-    
+                >
+                    {decodeHtmlEntities(response)}
+                </button>
+            ))}
+            {answer !== "" && <button onClick={props.handleSubmit}>{}</button>}
+        </div>
+    );
 }
+
 export default QuestionForm;

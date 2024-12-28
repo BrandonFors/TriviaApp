@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import "./TriviaPage.css";
 
 function SetupForm(props){
     const [difficulty, setDifficulty] = useState("medium");
@@ -9,7 +10,6 @@ function SetupForm(props){
 
     return(
         <div>
-            {/* Difficulty Buttons */}
             <div>
             <h2>Select Difficulty</h2>
             {difficulties.map((level) => (
@@ -23,7 +23,6 @@ function SetupForm(props){
             ))}
             </div>
     
-            {/* Amount Buttons */}
             <div>
             <h2>Select Number of Questions</h2>
             {amounts.map((num) => (
@@ -37,7 +36,6 @@ function SetupForm(props){
             ))}
             </div>
     
-            {/* Start Quiz Button */}
             <button onClick={() => props.handleStartPressed(amount, difficulty)}>Start Quiz</button>
         </div>
     )

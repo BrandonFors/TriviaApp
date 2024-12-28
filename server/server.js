@@ -16,6 +16,12 @@ app.use(cors())
 
 var categoryArray = []
 var answerData = []
+
+//trivia state variables
+var setupComplete = false;
+var quizOver = false;
+var questions = [];
+var questionIndex = 0;
 //tbd
 var userData = {
 
@@ -49,7 +55,7 @@ app.post("/questions", async (req, res) => {
     amount,
     difficulty,
     type: 'multiple',
-    ...(categoryId && { category: categoryId }) // Add 'category' only if 'categoryId' is not null
+    ...(categoryId != "Any" && { category: categoryId }) // Add 'category' only if 'categoryId' is not null
     };
 
     const response = await axios.get("https://opentdb.com/api.php", { params });
@@ -73,6 +79,27 @@ app.post("/questions", async (req, res) => {
     res.json(questionArray);
     // res.send("Testing");
 });
+app.get("/load-state",(req,res)=>{
+    const data = {
+        setupComplete,
+        quizOver,
+        questions,
+        questionIndex,
+        
+    }
+    res.json(data)
+})
+
+app.post("/save-state",(req,res)=>{
+    console.log(req.body);
+    setupComplete = req.body.setupComplete;
+    quizOver = req.body.quizOver;
+    questions = req.body.questions;
+    questionIndex = req.body.questionIndex;
+    res.send("States updated.")
+});
+
+
 
 
 
