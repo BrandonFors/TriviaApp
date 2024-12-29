@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import './TriviaPage.css';
-import { useParams, useLocation } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import axios from "axios";
 import SetupForm from "./SetupForm";
 import QuestionForm from "./QuestionForm";
@@ -12,9 +12,11 @@ function TriviaPage() {
     const [loading, setLoading] = useState(false);
     const [questions, setQuestions] = useState([]);
     const [questionIndex, setQuestionIndex] = useState(0);
+    const [difficulty, setDifficulty] = useState("");
     const [restoringState, setRestoringState] = useState(true);
+    const [shouldNavigate, setShouldNavigate] = useState(false);
     const {category} = useParams();
-    const {location} = useLocation();
+    const navigate = useNavigate();
 
     const getQuestions = async (amount, difficulty) => {
         try {
@@ -53,8 +55,61 @@ function TriviaPage() {
 
 
     }
+
+    const loadState = async () => {
+        try {
+            const response = await axios.get("http://localhost:8080/load-state");
+            const savedState = response.data;
+            if (savedState) {
+                setSetupComplete(savedState.setupComplete);
+                setQuizOver(savedState.quizOver);
+                setQuestions(savedState.questions || []);
+                setQuestionIndex(savedState.questionIndex || 0);
+                setDifficulty(savedState.difficulty);
+            }
+        } catch (error) {
+            console.error("Error loading state from backend: ", error);
+        } finally {
+            setRestoringState(false);
+        }
+    };
+
+    const saveState = async () => {
+        try {
+            const state = {
+                setupComplete,
+                quizOver,
+                questions,
+                questionIndex,
+                difficulty
+            };
+            await axios.post("http://localhost:8080/save-state", state);
+        } catch (error) {
+            console.error("Error saving state to backend: ", error);
+        }
+    };
+    const resetState = async () =>{
+        try {
+            const state = {
+                setupComplete: false,
+                quizOver: false,
+                questions: [],
+                questionIndex: 0,
+                difficulty: ""
+            };
+            await axios.post("http://localhost:8080/save-state", state);
+        } catch (error) {
+            console.error("Error saving reseting state backend: ", error);
+        }
+    }
+
+    const handlePopState = async () => {
+        resetState()
+    };
+
     const handleStartPressed = async (amount, difficulty) => {
         const data = await getQuestions(amount, difficulty);
+        setDifficulty(difficulty);
         setQuestions(data);
         setSetupComplete(true);
     };
@@ -84,49 +139,9 @@ function TriviaPage() {
     const handleResultsPressed = () =>{
         setQuizOver(true);
     }
-    const handleExitPressed = () => {
-        setQuestions([]);
-        setSetupComplete(false);
-        setQuestionIndex(0);
-    };
-
-    const loadState = async () => {
-        try {
-            const response = await axios.get("http://localhost:8080/load-state");
-            const savedState = response.data;
-            if (savedState) {
-                setSetupComplete(savedState.setupComplete);
-                setQuizOver(savedState.quizOver);
-                setQuestions(savedState.questions || []);
-                setQuestionIndex(savedState.questionIndex || 0);
-            }
-        } catch (error) {
-            console.error("Error loading state from backend: ", error);
-        } finally {
-            setRestoringState(false);
-        }
-    };
-
-    const saveState = async () => {
-        try {
-            const state = {
-                setupComplete,
-                quizOver,
-                questions,
-                questionIndex,
-            };
-            await axios.post("http://localhost:8080/save-state", state);
-        } catch (error) {
-            console.error("Error saving state to backend: ", error);
-        }
-    };
-
-    const handlePopState = () => {
-        setSetupComplete(false);
-        setQuizOver(false);
-        setQuestions([]);
-        setQuestionIndex(0);
-        saveState(); 
+    const handleExitPressed = async () => {
+        resetState();
+        setShouldNavigate(true);
     };
 
     // Reset state only when the back button is pressed
@@ -138,6 +153,7 @@ function TriviaPage() {
     }, []);
 
     useEffect(() => {
+        setLoading(false);
         loadState();
     }, []);
 
@@ -149,6 +165,12 @@ function TriviaPage() {
         return () => clearTimeout(timer);
     }, [setupComplete, quizOver, questions, questionIndex]);
 
+    useEffect(() => {
+        if (shouldNavigate) {
+            navigate('/');
+        }
+    }, [shouldNavigate]);
+
     if (restoringState) {
         return <div className="spinner"></div>;
     }
@@ -156,7 +178,8 @@ function TriviaPage() {
 
     return (
         <div>
-            <h1>{category}</h1>
+            <h1>{`${category} Trivia`}</h1>
+            {difficulty != "" && <h2>{`${difficulty.charAt(0).toUpperCase() + difficulty.slice(1)} Mode`}</h2>}
             {!setupComplete && !loading && (
                 <SetupForm handleStartPressed={handleStartPressed} />
             )}
@@ -171,7 +194,10 @@ function TriviaPage() {
                 />
             )}
             {quizOver && !loading &&(
-                <ResultsForm questions = {questions}></ResultsForm>
+                <ResultsForm 
+                questions = {questions}
+                handleExitPressed = {handleExitPressed}
+                ></ResultsForm>
             )}
             {loading && (
                 <div className="spinner"></div>

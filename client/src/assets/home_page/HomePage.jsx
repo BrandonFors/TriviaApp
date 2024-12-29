@@ -7,7 +7,7 @@ function HomePage(){
     const navigate = useNavigate();
 
     const categoryList = [
-        "Any",
+        "Random",
         "General Knowledge",
         "History",
         "Geography",

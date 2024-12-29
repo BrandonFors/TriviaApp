@@ -22,6 +22,7 @@ var setupComplete = false;
 var quizOver = false;
 var questions = [];
 var questionIndex = 0;
+var difficulty = "";
 //tbd
 var userData = {
 
@@ -55,7 +56,7 @@ app.post("/questions", async (req, res) => {
     amount,
     difficulty,
     type: 'multiple',
-    ...(categoryId != "Any" && { category: categoryId }) // Add 'category' only if 'categoryId' is not null
+    ...(categoryId != "Random" && { category: categoryId }) // Add 'category' only if 'categoryId' is not null
     };
 
     const response = await axios.get("https://opentdb.com/api.php", { params });
@@ -102,6 +103,7 @@ app.get("/load-state",(req,res)=>{
         quizOver,
         questions,
         questionIndex,
+        difficulty
         
     }
     res.json(data)
@@ -112,6 +114,14 @@ app.post("/save-state",(req,res)=>{
     quizOver = req.body.quizOver;
     questions = req.body.questions;
     questionIndex = req.body.questionIndex;
+    difficulty = req.body.difficulty;
+    console.log({
+        setupComplete,
+        quizOver,
+        questions,
+        questionIndex,
+        difficulty
+    })
     res.send("States updated.")
 });
 
