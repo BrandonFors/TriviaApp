@@ -19,6 +19,16 @@ button {
     color: white;
     font-weight: bold;
   }
+  button.correct {
+    background-color: rgb(13, 131, 0);
+    color: white;
+    font-weight: bold;
+  }
+  button.incorrect {
+    background-color: rgb(131, 0, 0);
+    color: white;
+    font-weight: bold;
+  }
 
   .spinner {
     border: 4px solid rgba(0, 0, 0, 0.1);

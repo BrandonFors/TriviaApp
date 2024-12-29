@@ -4,15 +4,25 @@ import "./TriviaPage.css";
 function QuestionForm(props) {
     const [answer, setAnswer] = useState("");
     const [question, setQuestion] = useState(props.questions[props.questionIndex])
+    const [isLastQuestion, setIsLastQuestion] = useState(false);
     const decodeHtmlEntities = (text) => {
         const parser = new DOMParser();
         return parser.parseFromString(text, 'text/html').body.textContent;
     };
+    useEffect(() => {
+        setQuestion(props.questions[props.questionIndex]);
+        setAnswer("");
+        if(props.questionIndex +1 == props.questions.length){
+            setIsLastQuestion(true);
+        }else{ 
+            setIsLastQuestion(false);
+        }
+        }, [props.questions, props.questionIndex]);
 
     return (
         <div>
-            <h1>{decodeHtmlEntities(question.question)}</h1>
-            {question.responses.map((response, index) => (
+            <h1>{`Question ${props.questionIndex+1}: ${decodeHtmlEntities(question.question)}`}</h1>
+            {!question.userAnswer && question.responses.map((response, index) => (
                 <button
                     key={index}
                     onClick={() => setAnswer(response)}
@@ -21,7 +31,22 @@ function QuestionForm(props) {
                     {decodeHtmlEntities(response)}
                 </button>
             ))}
-            {answer !== "" && <button onClick={()=>{props.handleSubmit}}>{}</button>}
+            {question.userAnswer && question.responses.map((response, index) => {
+                let buttonClass = "";
+                if (response === question.correctAnswer) {
+                    buttonClass = "correct"; 
+                } else if (response === question.userAnswer) {
+                    buttonClass = "incorrect"; 
+                }
+                return (
+                    <button key={index} className={buttonClass}>{decodeHtmlEntities(response)}</button>
+                );
+            })}
+            {!question.userAnswer && answer !== "" && <button onClick={()=>{props.handleSubmitPressed(answer)}}>{"Submit"}</button>}
+            {!isLastQuestion && question.userAnswer && <button onClick={()=>{props.handleNextQuestionPressed()}}>{"Next Question"}</button>}
+            {isLastQuestion && question.userAnswer && <button onClick={()=>{props.handleResultsPressed()}}>{"Results"}</button>}
+
+            
         </div>
     );
 }
