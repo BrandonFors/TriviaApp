@@ -15,7 +15,7 @@ app.use(cors())
 // app.use(cors(corsOptions))
 
 var categoryArray = []
-var answerData = []
+var answerKey = []
 
 //trivia state variables
 var setupComplete = false;
@@ -67,18 +67,35 @@ app.post("/questions", async (req, res) => {
         };
     });
 
-    answerData = response.data.results.map(item => {
+    answerKey = response.data.results.map(item => {
         return {
           question: item.question,
-          correctAnswer: item.correct_answer,
-          userAnswer: "",
-          isCorrect: false
+          correctAnswer: item.correct_answer
         };
     });
     
     res.json(questionArray);
     // res.send("Testing");
 });
+
+app.post("/check-answer", (req,res)=>{
+    var isCorrect = false;
+    const {questionIndex, userAnswer} = req.body;
+    const correctAnswer = answerKey[questionIndex].correctAnswer;
+    if(correctAnswer == userAnswer){
+        isCorrect = true;
+    }
+    const data = {
+        userAnswer,
+        correctAnswer,
+        isCorrect
+
+    }
+    res.json(data);
+
+})
+
+
 app.get("/load-state",(req,res)=>{
     const data = {
         setupComplete,
@@ -91,7 +108,6 @@ app.get("/load-state",(req,res)=>{
 })
 
 app.post("/save-state",(req,res)=>{
-    console.log(req.body);
     setupComplete = req.body.setupComplete;
     quizOver = req.body.quizOver;
     questions = req.body.questions;

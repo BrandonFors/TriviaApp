@@ -3,7 +3,7 @@ import "./TriviaPage.css";
 
 function QuestionForm(props) {
     const [answer, setAnswer] = useState("");
-
+    const [question, setQuestion] = useState(props.questions[props.questionIndex])
     const decodeHtmlEntities = (text) => {
         const parser = new DOMParser();
         return parser.parseFromString(text, 'text/html').body.textContent;
@@ -11,8 +11,8 @@ function QuestionForm(props) {
 
     return (
         <div>
-            <h1>{decodeHtmlEntities(props.question.question)}</h1>
-            {props.question.responses.map((response, index) => (
+            <h1>{decodeHtmlEntities(question.question)}</h1>
+            {question.responses.map((response, index) => (
                 <button
                     key={index}
                     onClick={() => setAnswer(response)}
@@ -21,7 +21,7 @@ function QuestionForm(props) {
                     {decodeHtmlEntities(response)}
                 </button>
             ))}
-            {answer !== "" && <button onClick={props.handleSubmit}>{}</button>}
+            {answer !== "" && <button onClick={()=>{props.handleSubmit}}>{}</button>}
         </div>
     );
 }

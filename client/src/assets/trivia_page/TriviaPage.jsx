@@ -4,6 +4,7 @@ import { useParams } from 'react-router-dom';
 import axios from "axios";
 import SetupForm from "./SetupForm";
 import QuestionForm from "./QuestionForm";
+import ResultsForm from "./ResultsForm";
 
 function TriviaPage() {
     const [setupComplete, setSetupComplete] = useState(false);
@@ -17,7 +18,11 @@ function TriviaPage() {
     const getQuestions = async (amount, difficulty) => {
         try {
             setLoading(true);
-            const postData = { amount, category, difficulty };
+            const postData = { 
+                amount, 
+                category, 
+                difficulty 
+            };
             const response = await axios.post("http://localhost:8080/questions", postData);
             return response.data;
         } catch (error) {
@@ -27,18 +32,34 @@ function TriviaPage() {
             setLoading(false);
         }
     };
+    const checkAnswer = async(questionIndex, userAnswer) =>{
+        setLoading(true);
+        try{
+            const postData = {
+                questionIndex,
+                userAnswer
+            };
+            const response = await axios.post("http://localhost:8080/check-answer", postData)
+            return response.data;
+        }catch(error){
+            console.error("Error checking answer:", error);
+            return [];
+        }finally{
+            setLoading(false);
+        }
+        
 
+
+    }
     const handleStartPressed = async (amount, difficulty) => {
         const data = await getQuestions(amount, difficulty);
         setQuestions(data);
         setSetupComplete(true);
     };
 
-    const handleSubmitPressed = () => {
-        if (questionIndex === questions.length - 1) {
-            setQuizOver(true);
-        } else {
-        }
+    const handleSubmitPressed = async (userAnswer) => {
+        const data = await checkAnswer(questionIndex,userAnswer);
+
     };
 
     const handleNextQuestionPressed = () => {
@@ -82,8 +103,18 @@ function TriviaPage() {
     };
 
     useEffect(() => {
+        setSetupComplete(false);
+        setQuizOver(false);
+        setQuestions([]);
+        setQuestionIndex(0);
+        saveState();
+    }, [category]);
+
+    useEffect(() => {
         loadState();
     }, []);
+
+    
 
     useEffect(() => {
         const timer = setTimeout(() => {
@@ -96,6 +127,7 @@ function TriviaPage() {
         return <div className="spinner"></div>;
     }
 
+
     return (
         <div>
             <h1>{category}</h1>
@@ -107,9 +139,20 @@ function TriviaPage() {
             )}
             {setupComplete && !loading && (
                 <QuestionForm
-                    question={questions[questionIndex]}
+                    questions={questions}
+                    questionIndex = {questionIndex}
+                    questionsLength = {questions.length}
+
                 />
             )}
+            {quizOver && loading && (
+                <div className="spinner"></div>
+
+            )}
+            {quizOver && !loading &&(
+                <ResultsForm questions = {questions}></ResultsForm>
+            )}
+            
         </div>
     );
 }
