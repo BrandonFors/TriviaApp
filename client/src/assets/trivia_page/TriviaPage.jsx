@@ -121,16 +121,16 @@ function TriviaPage() {
         }
     };
 
+    const handlePopState = () => {
+        setSetupComplete(false);
+        setQuizOver(false);
+        setQuestions([]);
+        setQuestionIndex(0);
+        saveState(); 
+    };
+
     // Reset state only when the back button is pressed
     useEffect(() => {
-        const handlePopState = () => {
-            setSetupComplete(false);
-            setQuizOver(false);
-            setQuestions([]);
-            setQuestionIndex(0);
-            saveState(); // Save state to ensure it's reset on the backend
-        };
-
         window.addEventListener("popstate", handlePopState);
         return () => {
             window.removeEventListener("popstate", handlePopState);
@@ -142,7 +142,6 @@ function TriviaPage() {
     }, []);
 
     
-
     useEffect(() => {
         const timer = setTimeout(() => {
             saveState();
@@ -158,11 +157,8 @@ function TriviaPage() {
     return (
         <div>
             <h1>{category}</h1>
-            {!setupComplete && (
+            {!setupComplete && !loading && (
                 <SetupForm handleStartPressed={handleStartPressed} />
-            )}
-            {!quizOver && setupComplete && loading && (
-                <div className="spinner"></div>
             )}
             {!quizOver && setupComplete && !loading && (
                 <QuestionForm
@@ -174,12 +170,12 @@ function TriviaPage() {
                     handleResultsPressed = {handleResultsPressed}
                 />
             )}
-            {quizOver && loading && (
-                <div className="spinner"></div>
-
-            )}
             {quizOver && !loading &&(
                 <ResultsForm questions = {questions}></ResultsForm>
+            )}
+            {loading && (
+                <div className="spinner"></div>
+
             )}
             
         </div>
