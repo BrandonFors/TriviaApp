@@ -179,7 +179,7 @@ function TriviaPage() {
     return (
         <div>
             <h1>{`${category} Trivia`}</h1>
-            {difficulty != "" && <h2>{`${difficulty.charAt(0).toUpperCase() + difficulty.slice(1)} Mode`}</h2>}
+            {difficulty != "" && <h2>{`${difficulty.charAt(0).toUpperCase() + difficulty.slice(1)} Difficulty`}</h2>}
             {!setupComplete && !loading && (
                 <SetupForm handleStartPressed={handleStartPressed} />
             )}
