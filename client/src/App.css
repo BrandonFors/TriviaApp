@@ -1,7 +1,18 @@
-body{
-    background-color: gray;
-    display: flex;
-    flex-direction: column;
-    -ms-flex-align: center;
-  }
+@import url('https://fonts.googleapis.com/css2?family=Josefin+Sans:ital,wght@0,100..700;1,100..700&display=swap');
+html{
+  font-family: "Josefin Sans", serif;
+  font-weight: bold;
+}
+
+body {
+  margin: 0;
+  padding: 0;
   
+  background-color: #015600;
+  background-image: url("https://www.transparenttextures.com/patterns/axiom-pattern.png");
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 100vh;
+  box-sizing: border-box;
+}

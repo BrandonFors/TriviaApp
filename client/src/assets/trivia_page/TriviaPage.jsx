@@ -10,6 +10,7 @@ function TriviaPage() {
     const [setupComplete, setSetupComplete] = useState(false);
     const [quizOver, setQuizOver] = useState(false);
     const [loading, setLoading] = useState(false);
+    const [checkLoading, setCheckLoading] = useState(false);
     const [questions, setQuestions] = useState([]);
     const [questionIndex, setQuestionIndex] = useState(0);
     const [difficulty, setDifficulty] = useState("");
@@ -36,7 +37,7 @@ function TriviaPage() {
         }
     };
     const checkAnswer = async(questionIndex, userAnswer) =>{
-        setLoading(true);
+        setCheckLoading(true);
         try{
             const postData = {
                 questionIndex,
@@ -49,7 +50,7 @@ function TriviaPage() {
             console.error("Error checking answer:", error);
             return [];
         }finally{
-            setLoading(false);
+            setCheckLoading(false);
         }
         
 
@@ -154,6 +155,7 @@ function TriviaPage() {
 
     useEffect(() => {
         setLoading(false);
+        setCheckLoading(false);
         loadState();
     }, []);
 
@@ -177,33 +179,39 @@ function TriviaPage() {
 
 
     return (
-        <div>
+        <div >
             <h1>{`${category} Trivia`}</h1>
             {difficulty != "" && <h2>{`${difficulty.charAt(0).toUpperCase() + difficulty.slice(1)} Difficulty`}</h2>}
-            {!setupComplete && !loading && (
-                <SetupForm handleStartPressed={handleStartPressed} />
-            )}
-            {!quizOver && setupComplete && !loading && (
-                <QuestionForm
-                    questions={questions}
-                    questionIndex = {questionIndex}
-                    questionsLength = {questions.length}
-                    handleSubmitPressed = {handleSubmitPressed}
-                    handleNextQuestionPressed = {handleNextQuestionPressed}
-                    handleResultsPressed = {handleResultsPressed}
-                />
-            )}
-            {quizOver && !loading &&(
-                <ResultsForm 
-                questions = {questions}
-                handleExitPressed = {handleExitPressed}
-                ></ResultsForm>
-            )}
-            {loading && (
-                <div className="spinner"></div>
 
-            )}
-            
+            <div className="trivia-container">
+                
+                {!setupComplete && !loading && (
+                    <SetupForm handleStartPressed={handleStartPressed} />
+                )}
+                {!quizOver && setupComplete && !loading && (
+                    <QuestionForm
+                        questions={questions}
+                        questionIndex = {questionIndex}
+                        questionsLength = {questions.length}
+                        checkLoading = {checkLoading}
+                        handleSubmitPressed = {handleSubmitPressed}
+                        handleNextQuestionPressed = {handleNextQuestionPressed}
+                        handleResultsPressed = {handleResultsPressed}
+                        
+                    />
+                )}
+                {quizOver && !loading &&(
+                    <ResultsForm 
+                    questions = {questions}
+                    handleExitPressed = {handleExitPressed}
+                    ></ResultsForm>
+                )}
+                {loading && (
+                    <div className="spinner"></div>
+
+                )}
+                
+            </div>
         </div>
     );
 }

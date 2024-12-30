@@ -20,28 +20,32 @@ function QuestionForm(props) {
         }, [props.questions, props.questionIndex]);
 
     return (
-        <div>
-            <h1>{`Question ${props.questionIndex+1}: ${decodeHtmlEntities(question.question)}`}</h1>
-            {!question.userAnswer && question.responses.map((response, index) => (
-                <button
-                    key={index}
-                    onClick={() => setAnswer(response)}
-                    className={answer === response ? 'selected' : ''}
-                >
-                    {decodeHtmlEntities(response)}
-                </button>
-            ))}
-            {question.userAnswer && question.responses.map((response, index) => {
-                let buttonClass = "";
-                if (response === question.correctAnswer) {
-                    buttonClass = "correct"; 
-                } else if (response === question.userAnswer) {
-                    buttonClass = "incorrect"; 
-                }
-                return (
-                    <button key={index} className={buttonClass}>{decodeHtmlEntities(response)}</button>
-                );
-            })}
+        <div className="question-container">
+            <h2>{`Question ${props.questionIndex+1}: ${decodeHtmlEntities(question.question)}`}</h2>
+            {!props.checkLoading && <div className="button-container">
+                {!question.userAnswer && question.responses.map((response, index) => (
+                    <button
+                        key={index}
+                        onClick={() => setAnswer(response)}
+                        className={answer === response ? 'selected' : ''}
+                    >
+                        {decodeHtmlEntities(response)}
+                    </button>
+                ))}
+                {question.userAnswer && question.responses.map((response, index) => {
+                    let buttonClass = "";
+                    if (response === question.correctAnswer) {
+                        buttonClass = "correct"; 
+                    } else if (response === question.userAnswer) {
+                        buttonClass = "incorrect"; 
+                    }
+                    return (
+                        <button key={index} className={buttonClass}>{decodeHtmlEntities(response)}</button>
+                    );
+                })}
+            </div>}
+            {props.checkLoading && <div className="spinner"></div> }
+            
             {!question.userAnswer && answer !== "" && <button onClick={()=>{props.handleSubmitPressed(answer)}}>{"Submit"}</button>}
             {!isLastQuestion && question.userAnswer && <button onClick={()=>{props.handleNextQuestionPressed()}}>{"Next Question"}</button>}
             {isLastQuestion && question.userAnswer && <button onClick={()=>{props.handleResultsPressed()}}>{"Results"}</button>}
