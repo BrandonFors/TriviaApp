@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import "./TriviaPage.css";
-
 function QuestionForm(props) {
     const [answer, setAnswer] = useState("");
     const [question, setQuestion] = useState(props.questions[props.questionIndex])
@@ -44,12 +43,11 @@ function QuestionForm(props) {
                     );
                 })}
             </div>}
-            {props.checkLoading && <div className="spinner"></div> }
-            
-            {!question.userAnswer && answer !== "" && <button onClick={()=>{props.handleSubmitPressed(answer)}}>{"Submit"}</button>}
-            {!isLastQuestion && question.userAnswer && <button onClick={()=>{props.handleNextQuestionPressed()}}>{"Next Question"}</button>}
-            {isLastQuestion && question.userAnswer && <button onClick={()=>{props.handleResultsPressed()}}>{"Results"}</button>}
-
+            {props.checkLoading && <div className="spinner"></div> }   
+                {!question.userAnswer && answer !== "" && <button onClick={()=>{props.handleSubmitPressed(answer)}}>{"Submit"}</button>}
+                {!isLastQuestion && question.userAnswer && <button onClick={()=>{props.handleNextQuestionPressed()}}>{"Next Question"}</button>}
+                {isLastQuestion && question.userAnswer && <button onClick={()=>{props.handleResultsPressed()}}>{"Results"}</button>}
+         
             
         </div>
     );
