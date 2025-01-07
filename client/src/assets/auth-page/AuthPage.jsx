@@ -42,7 +42,7 @@ function AuthPage() {
         `http://localhost:8080${endpoint}`,
         postData
       );
-      if(!response.data.success){
+      if (!response.data.success) {
         setErrorMessage(response.data.message);
       }
       if (!isSignup && response.data.success) {

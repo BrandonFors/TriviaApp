@@ -28,14 +28,13 @@ function HomePage() {
     navigate(`/trivia/${category}`);
   };
   const handleUser = async () => {
-    if(!loggedIn){
+    if (!loggedIn) {
       navigate("/login");
-    }else{
+    } else {
       const response = await axios.get("http://localhost:8080/logout");
       setLoggedIn(false);
       setCurrentUser("");
     }
-    
   };
 
   useEffect(() => {
@@ -48,7 +47,7 @@ function HomePage() {
         console.error("Error fetching home data:", error);
       }
     };
-  
+
     fetchData();
   }, []);
   return (
@@ -56,7 +55,9 @@ function HomePage() {
       <h1>
         <LightbulbIcon fontSize="large"></LightbulbIcon>Trivia
       </h1>
-      <button onClick={handleUser}>{loggedIn ? `Sign Out: ${currentUser}`  : "Login/SignUp"}</button>
+      <button onClick={handleUser}>
+        {loggedIn ? `Sign Out: ${currentUser}` : "Login/SignUp"}
+      </button>
       <div className="trivia-container">
         <h2>Select A Category</h2>
         <div className="button-container">

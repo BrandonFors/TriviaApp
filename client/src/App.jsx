@@ -1,11 +1,10 @@
 import React, { useEffect, useState } from "react";
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import './App.css';
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import "./App.css";
 import Footer from "./assets/footer/Footer";
 import TriviaPage from "./assets/trivia_page/TriviaPage";
 import HomePage from "./assets/home_page/HomePage";
 import AuthPage from "./assets/auth-page/AuthPage";
-
 
 function App() {
   return (
@@ -22,4 +21,4 @@ function App() {
   );
 }
 
-export default App
+export default App;
