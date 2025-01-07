@@ -4,6 +4,7 @@ import './App.css';
 import Footer from "./assets/footer/Footer";
 import TriviaPage from "./assets/trivia_page/TriviaPage";
 import HomePage from "./assets/home_page/HomePage";
+import AuthPage from "./assets/auth-page/AuthPage";
 
 
 function App() {
@@ -12,6 +13,7 @@ function App() {
       <Router>
         <Routes>
           <Route path="/" element={<HomePage />} />
+          <Route path="/Login-SignUp" element={<AuthPage />} />
           <Route path="/trivia/:category" element={<TriviaPage />} />
         </Routes>
       </Router>

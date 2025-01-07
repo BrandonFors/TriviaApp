@@ -2,6 +2,8 @@ const express =require("express");
 const bodyParser = require("body-parser");
 const cors = require("cors");
 const axios = require("axios");
+const { MongoClient } = require("mongodb");
+var mongoURL = "mongodb://localhost:27017/";
 // const corsOptions = {
 //     origin: "http://localhost:5173/",
 // }
@@ -13,6 +15,11 @@ app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({extended:true}))
 app.use(cors())
 // app.use(cors(corsOptions))
+
+const client = new MongoClient(mongoURL);
+const database = client.db('TriviaApp');
+const users = database.collection('users');
+
 
 var categoryArray = []
 var answerKey = []

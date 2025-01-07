@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import "./TriviaPage.css";
 function QuestionForm(props) {
     const [answer, setAnswer] = useState("");
     const [question, setQuestion] = useState(props.questions[props.questionIndex])

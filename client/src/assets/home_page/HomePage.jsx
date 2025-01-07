@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import "./HomePage.css";
 import CategoryWidget from "./CategoryWidget";
 import { useParams, useNavigate } from 'react-router-dom';
 import LightbulbIcon from '@mui/icons-material/Lightbulb';
@@ -27,10 +26,13 @@ function HomePage(){
         // Pass data through URL or global state (e.g., Context)
         navigate(`/trivia/${category}`);
     };
-
+    const authPage = ()=>{
+        navigate('/Login-SignUp')
+    }
     return(
         <div>
             <h1><LightbulbIcon fontSize="large"></LightbulbIcon>Trivia</h1>
+            <button onClick={authPage}>Login/SignUp</button>
             <div className="trivia-container">
                 <h2>Select A Category</h2>
                 <div className="button-container">

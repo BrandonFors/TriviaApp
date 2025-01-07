@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import "./TriviaPage.css";
 
 function SetupForm(props){
     const [difficulty, setDifficulty] = useState("medium");

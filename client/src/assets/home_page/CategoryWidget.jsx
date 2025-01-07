@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import "./HomePage.css"
 function CategoryWidget(props){
     
     const handleClick = (event)=>{

@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import './TriviaPage.css';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from "axios";
 import SetupForm from "./SetupForm";
@@ -180,7 +179,7 @@ function TriviaPage() {
 
     return (
         <div >
-            <h1><LightbulbIcon fontSize="large"></LightbulbIcon>{`${category} Trivia`}</h1>
+            <h1><span><LightbulbIcon fontSize="large"></LightbulbIcon></span>{`${category} Trivia`}</h1>
             {difficulty != "" && <h2>{`${difficulty.charAt(0).toUpperCase() + difficulty.slice(1)} Difficulty`}</h2>}
 
             <div className="trivia-container">

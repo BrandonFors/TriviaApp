@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import "./TriviaPage.css";
 import ResultElement from "./ResultElement";
 function ResultsForm(props){
     const [score, setScore] = useState(0);
