@@ -25,7 +25,7 @@ function ResultsForm(props) {
           question={question}
         ></ResultElement>
       ))}
-      <button onClick={() => props.handleExitPressed()}>Exit</button>
+      <button onClick={() => props.handleExitPressed(score,props.questions.length)}>Exit</button>
     </div>
   );
 }

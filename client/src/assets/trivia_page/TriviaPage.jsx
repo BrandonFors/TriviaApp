@@ -106,6 +106,20 @@ function TriviaPage() {
     }
   };
 
+  const submitScore = async (score, amtQuestions, category, difficulty) =>{
+    try{
+      const postData = {
+        score,
+        amtQuestions,
+        category,
+        difficulty
+      }
+      await axios.post("http://localhost:8080/score", postData);
+    }catch(error){
+      console.error("Error submitting score", error);
+    }
+  }
+
   const handlePopState = async () => {
     resetState();
   };
@@ -142,7 +156,8 @@ function TriviaPage() {
   const handleResultsPressed = () => {
     setQuizOver(true);
   };
-  const handleExitPressed = async () => {
+  const handleExitPressed = async (score, amtQuestions) => {
+    await submitScore(score, amtQuestions, category, difficulty)
     resetState();
     setShouldNavigate(true);
   };
@@ -182,7 +197,7 @@ function TriviaPage() {
     <div>
       <h1>
         <span>
-          <LightbulbIcon fontSize="large"></LightbulbIcon>
+          <LightbulbIcon fontSize="x-large"></LightbulbIcon>
         </span>
         {`${category} Trivia`}
       </h1>

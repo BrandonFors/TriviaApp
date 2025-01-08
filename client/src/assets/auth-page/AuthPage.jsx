@@ -70,7 +70,7 @@ function AuthPage() {
 
       <form className="auth-form" onSubmit={handleSubmit}>
         <div className="form-group">
-          <label htmfor="username">Username</label>
+          <label htmlFor="username">Username</label>
           <input
             type="text"
             name="username"
@@ -81,7 +81,7 @@ function AuthPage() {
         </div>
 
         <div className="form-group">
-          <label htmlfor="password">Password</label>
+          <label htmlFor="password">Password</label>
           <input
             type="password"
             name="password"
@@ -93,7 +93,7 @@ function AuthPage() {
 
         {isSignup && (
           <div className="form-group">
-            <label htmlfor="confirmPassword">Confirm Password</label>
+            <label htmlFor="confirmPassword">Confirm Password</label>
             <input
               type="password"
               name="confirmPassword"
@@ -115,10 +115,18 @@ function AuthPage() {
         {isSignup ? "Already have an account?" : "Don't have an account?"}{" "}
         <button
           className="toggle-button"
-          onClick={() => setIsSignup((prev) => !prev)}
+          onClick={() => setIsSignup((prevValue) => (!prevValue))}
           disabled={loading}
         >
           {isSignup ? "Log In" : "Sign Up"}
+        </button>
+        Want to go back?
+        <button
+          className="toggle-button"
+          onClick={() => (setNavHome(true))}
+          disabled={loading}
+        >
+          Home
         </button>
       </p>
     </div>
