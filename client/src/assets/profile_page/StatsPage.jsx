@@ -10,7 +10,6 @@ function StatsPage() {
   const [categoryData, setCategoryData] = useState([]);
   const [navHome, setNavHome] = useState(false);
   const navigate = useNavigate();
-  const { username } = useParams();
 
   const handleChange = (event) => {
     setCurrentCategory(event.target.value);
