@@ -1,3 +1,4 @@
+
 const express = require("express");
 const bodyParser = require("body-parser");
 const cors = require("cors");
@@ -36,7 +37,7 @@ connectDB();
 var categoryArray = [];
 var answerKey = [];
 
-//trivia state variables
+//trivia state 
 var setupComplete = false;
 var quizOver = false;
 var questions = [];

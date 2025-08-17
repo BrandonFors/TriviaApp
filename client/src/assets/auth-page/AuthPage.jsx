@@ -115,7 +115,7 @@ function AuthPage() {
         {isSignup ? "Already have an account?" : "Don't have an account?"}{" "}
         <button
           className="toggle-button"
-          onClick={() => setIsSignup((prevValue) => (!prevValue))}
+          onClick={() => setIsSignup((prevValue) => !prevValue)}
           disabled={loading}
         >
           {isSignup ? "Log In" : "Sign Up"}
@@ -123,7 +123,7 @@ function AuthPage() {
         Want to go back?
         <button
           className="toggle-button"
-          onClick={() => (setNavHome(true))}
+          onClick={() => setNavHome(true)}
           disabled={loading}
         >
           Home

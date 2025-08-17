@@ -1,14 +1,18 @@
+// Serves a question with 4 options for answers to the user
 import React, { useEffect, useState } from "react";
 function QuestionForm(props) {
+  // stores question details
   const [answer, setAnswer] = useState("");
   const [question, setQuestion] = useState(
     props.questions[props.questionIndex]
   );
   const [isLastQuestion, setIsLastQuestion] = useState(false);
+  // decodes the question text
   const decodeHtmlEntities = (text) => {
     const parser = new DOMParser();
     return parser.parseFromString(text, "text/html").body.textContent;
   };
+  // detects if the question is the last question
   useEffect(() => {
     setQuestion(props.questions[props.questionIndex]);
     setAnswer("");
@@ -20,11 +24,13 @@ function QuestionForm(props) {
   }, [props.questions, props.questionIndex]);
 
   return (
+    // Contains the question text
     <div className="question-container">
       <h2>{`Question ${props.questionIndex + 1}: ${decodeHtmlEntities(
         question.question
       )}`}</h2>
-      {!props.checkLoading && (
+      {!props.answerLoading && (
+        //contains buttons and creates buttons for every question answer, stylizes based on user clicks
         <div className="button-container">
           {!question.userAnswer &&
             question.responses.map((response, index) => (
@@ -36,6 +42,7 @@ function QuestionForm(props) {
                 {decodeHtmlEntities(response)}
               </button>
             ))}
+          {/* If the user has answered, style buttons based on the real correct answer and the user anser with red and green */}
           {question.userAnswer &&
             question.responses.map((response, index) => {
               let buttonClass = "";
@@ -52,7 +59,9 @@ function QuestionForm(props) {
             })}
         </div>
       )}
-      {props.checkLoading && <div className="spinner"></div>}
+      {/* handles loading */}
+      {props.answerLoading && <div className="spinner"></div>}
+      {/* If the user has not answered, display a submit button */}
       {!question.userAnswer && answer !== "" && (
         <button
           onClick={() => {
@@ -62,6 +71,7 @@ function QuestionForm(props) {
           {"Submit"}
         </button>
       )}
+      {/* If the user has answered and it is not the last question, display a next question button */}
       {!isLastQuestion && question.userAnswer && (
         <button
           onClick={() => {
@@ -71,6 +81,7 @@ function QuestionForm(props) {
           {"Next Question"}
         </button>
       )}
+      {/* If it is the last question and the user has answered, display a see resutls button */}
       {isLastQuestion && question.userAnswer && (
         <button
           onClick={() => {

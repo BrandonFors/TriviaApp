@@ -6,9 +6,9 @@ import TriviaPage from "./assets/trivia_page/TriviaPage";
 import HomePage from "./assets/home_page/HomePage";
 import AuthPage from "./assets/auth-page/AuthPage";
 import StatsPage from "./assets/profile_page/StatsPage";
-
 function App() {
   return (
+    // contains routes to necessary pages in the site
     <div>
       <Router>
         <Routes>
@@ -18,7 +18,6 @@ function App() {
           <Route path="/stats" element={<StatsPage />} />
         </Routes>
       </Router>
-      <Footer></Footer>
     </div>
   );
 }
