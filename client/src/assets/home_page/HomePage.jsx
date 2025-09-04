@@ -1,3 +1,4 @@
+// homepage for the quiz site 
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import CategoryWidget from "./CategoryWidget";
@@ -5,10 +6,12 @@ import { useNavigate } from "react-router-dom";
 import LightbulbIcon from "@mui/icons-material/Lightbulb";
 
 function HomePage() {
+  // stores whether or not a user is logged in
   const [loggedIn, setLoggedIn] = useState(false);
+  // stores the name of the current user
   const [currentUser, setCurrentUser] = useState("");
   const navigate = useNavigate();
-
+  // a list of available catagories
   const categoryList = [
     "Random",
     "General Knowledge",
@@ -22,11 +25,11 @@ function HomePage() {
     "Entertainment: Film",
     "Entertainment: Comics",
   ];
-
+  // navigates to to a trivia setup page for a catagory
   const chooseCategory = (category) => {
-    // Pass data through URL or global state (e.g., Context)
     navigate(`/trivia/${category}`);
   };
+  // if the login button is pressed and the user is not logged in, nav to the login page, otherwise logout
   const handleUser = async () => {
     if (!loggedIn) {
       navigate("/login");
@@ -36,10 +39,12 @@ function HomePage() {
       setCurrentUser("");
     }
   };
+  // nav to the stats page
   const handleStats = async () => {
     navigate(`/stats`);
   };
 
+  // on load, fetch any user data present on the server to see if they are logged in
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -53,16 +58,21 @@ function HomePage() {
 
     fetchData();
   }, []);
+
+
   return (
     <div>
       <h1>
         <LightbulbIcon fontSize="x-large"></LightbulbIcon>Trivia
       </h1>
+      {/* login/logout button */}
       <button onClick={handleUser}>
         {loggedIn ? `Sign Out: ${currentUser}` : "Login/SignUp"}
       </button>
+      {/* if the user is logged in, make the stats button available */}
       {loggedIn && <button onClick={handleStats}>Profile Stats</button>}
       <div className="trivia-container">
+      {/* section containing category buttons to select */}
         <h2>Select A Category</h2>
         <div className="button-container">
           {categoryList.map((category, index) => {

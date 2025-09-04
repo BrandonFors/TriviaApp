@@ -1,19 +1,24 @@
+// page where the user can login
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
 function AuthPage() {
+  // stores whether or not the form should be a signup or login
   const [isSignup, setIsSignup] = useState(false);
+  // stores the form data entered 
   const [formData, setFormData] = useState({
     username: "",
     password: "",
     confirmPassword: "",
   });
+  // stores an error message returned by the backend
   const [errorMessage, setErrorMessage] = useState("");
   const [loading, setLoading] = useState(false);
   const [navHome, setNavHome] = useState(false);
   const navigate = useNavigate();
 
+  // handles change in any fields of the form data
   const handleChange = (event) => {
     const { name, value } = event.target;
     setFormData((prev) => ({
@@ -21,7 +26,7 @@ function AuthPage() {
       [name]: value,
     }));
   };
-
+  // handles submitting form data to the backend to login or sign up
   const handleSubmit = async (event) => {
     event.preventDefault();
     setErrorMessage("");
@@ -67,9 +72,10 @@ function AuthPage() {
   return (
     <div className="auth-container">
       <h1>{isSignup ? "Sign Up" : "Log In"}</h1>
-
+      {/* form for login or signup */}
       <form className="auth-form" onSubmit={handleSubmit}>
         <div className="form-group">
+          {/* username section */}
           <label htmlFor="username">Username</label>
           <input
             type="text"
@@ -79,7 +85,7 @@ function AuthPage() {
             required
           />
         </div>
-
+        {/* password section */}
         <div className="form-group">
           <label htmlFor="password">Password</label>
           <input
@@ -90,7 +96,7 @@ function AuthPage() {
             required
           />
         </div>
-
+        {/* if the form is for signup, include a password confirmation section */}
         {isSignup && (
           <div className="form-group">
             <label htmlFor="confirmPassword">Confirm Password</label>
@@ -103,15 +109,16 @@ function AuthPage() {
             />
           </div>
         )}
-
+        {/* display an error message if one is present */}
         {errorMessage && <p className="error-message">{errorMessage}</p>}
-
+        {/* submit button */}
         <button type="submit" disabled={loading}>
           {loading ? "Processing..." : isSignup ? "Sign Up" : "Log In"}
         </button>
       </form>
 
       <p>
+        {/* Displays an option to toggle between signup and login */}
         {isSignup ? "Already have an account?" : "Don't have an account?"}{" "}
         <button
           className="toggle-button"
@@ -121,6 +128,7 @@ function AuthPage() {
           {isSignup ? "Log In" : "Sign Up"}
         </button>
         Want to go back?
+        {/* go back to homepage */}
         <button
           className="toggle-button"
           onClick={() => setNavHome(true)}
