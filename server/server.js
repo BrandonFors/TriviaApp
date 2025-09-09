@@ -1,26 +1,24 @@
 
 ////////////////////// FIXING IN PROGRESS \\\\\\\\\\\\\\\\\\\\\
-
+const dotenv = require('dotenv'); // figure out environment variables
 const express = require("express");
 const bodyParser = require("body-parser");
 const cors = require("cors");
 const axios = require("axios");
 const { MongoClient } = require("mongodb");
-var mongoURL = "mongodb://localhost:27017/";
-// const corsOptions = {
-//     origin: "http://localhost:5173/",
-// }
+const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
+
+dotenv.config();
 
 const app = express();
-const port = 8080;
-
+const port = process.env.PORT;
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cors());
-// app.use(cors(corsOptions))
 
-const client = new MongoClient(mongoURL);
-let users;
+const client = new MongoClient(process.env.MONGO_URL);
+const JWT_SECRET = process.env.JWT_SECRET;
 
 async function connectDB() {
   try {
@@ -48,6 +46,11 @@ var difficulty = "";
 //user stuff
 var currentUser = "";
 var loggedIn = false;
+
+function authenticateToken(req, res){
+  
+}
+
 
 const getCategories = async () => {
   const result = await axios.get("https://opentdb.com/api_category.php");
