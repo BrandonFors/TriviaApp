@@ -2,8 +2,6 @@ const User = require("../models/User");
 const TriviaData = require("../models/TriviaData");
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-const dotenv = require('dotenv'); 
-dotenv.config();
 
 const JWT_SECRET = process.env.JWT_SECRET;
 
