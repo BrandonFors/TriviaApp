@@ -12,10 +12,10 @@ const CategorySchema = new mongoose.Schema({
   items: {type: [ItemSchema], required: true},
 })
 // schema for trivia data that will store all data for a given user
-const triviaDataSchema = new mongoose.Schema({
+const userDataSchema = new mongoose.Schema({
   username: { type: String, unique: true, required: true},
   totalQuestions: { type: Number, required: true},
   totalCorrect: {type: Number, required:true},
   categories: {type: [CategorySchema], required: true},
 });
-module.exports = mongoose.model('TriviaData', triviaDataSchema);
+module.exports = mongoose.model('UserData', userDataSchema);

@@ -1,5 +1,5 @@
 const User = require("../models/User");
-const TriviaData = require("../models/TriviaData");
+const UserData = require("../models/UserData");
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 
@@ -35,7 +35,7 @@ exports.signup = async (req, res) => {
         totalCorrect: 0,
         categories: [],
       };
-      await TriviaData.insertOne(triviaDoc);
+      await UserData.insertOne(triviaDoc);
       res.status(200).json({
         success: true
       });
@@ -50,13 +50,14 @@ exports.signup = async (req, res) => {
 
 exports.login = async (req, res) => {
   const { username, password } = req.body;
+  console.log(username);
   const query = {
     username: username,
   };
   try {
     const result = await User.findOne(query);
     if (result) {
-      const passwordMatch = await bcrypt.compare(password, username.password);
+      const passwordMatch = await bcrypt.compare(password, result.password);
       if (passwordMatch) {
         const token = jwt.sign({userId: username._id}, JWT_SECRET, {
           expiresIn: '24h',

@@ -1,179 +1,90 @@
 // controllers that handle user data
-const TriviaData = require("../models/TriviaData");
+const UserData = require("../models/UserData");
 
 
 exports.score =  async (req, res) => {
-  if (loggedIn) {
-    const { score, amtQuestions, category, difficulty } = req.body;
 
-    try {
-      const userDoc = await TriviaData.findOne(
-        { username: currentUser },
-        { projection: { categories: 1, totalCorrect: 1, totalQuestions: 1 } }
-      );
+  const { username, score, amtQuestions, category, difficulty } = req.body;
 
-      let categoryExists = false;
-      let difficultyExists = false;
-      let existingTotalQuestions = 0;
-      let existingTotalCorrect = 0;
-      let existingNumQuestions = 0;
-      let existingNumCorrect = 0;
+  try {
+    const userDoc = await UserData.findOne({ username: username });
 
-      if (userDoc) {
-        existingTotalQuestions = userDoc.totalQuestions;
-        existingTotalCorrect = userDoc.totalCorrect;
+    let totalQuestions = userDoc?.totalQuestions || 0;
+    let totalCorrect = userDoc?.totalCorrect || 0;
+    let categories = userDoc?.categories || [];
 
-        const categoryObj = userDoc.categories?.find(
-          (categoryObj) => categoryObj.name === category
-        );
-        if (categoryObj) {
-          categoryExists = true;
-
-          const matchedItem = categoryObj.items.find(
-            (item) => item.difficulty === difficulty
-          );
-          if (matchedItem) {
-            difficultyExists = true;
-            existingNumQuestions = matchedItem.numQuestions || 0;
-            existingNumCorrect = matchedItem.numCorrect || 0;
-          }
-        }
-      }
-
-      const updatedTotalQuestions = existingTotalQuestions + amtQuestions;
-      const updatedTotalCorrect = existingTotalCorrect + score;
-
-      const difficultyOrder = { easy: 1, medium: 2, hard: 3 };
-
-      if (!categoryExists) {
-        const updateDoc = {
-          $push: {
-            categories: {
-              name: category,
-              items: [
-                {
-                  difficulty,
-                  numQuestions: amtQuestions,
-                  numCorrect: score,
-                },
-              ],
-            },
-          },
-          $set: {
-            totalCorrect: updatedTotalCorrect,
-            totalQuestions: updatedTotalQuestions,
-          },
-        };
-
-        await TriviaData.updateOne({ username: currentUser }, updateDoc, {
-          upsert: true,
-        });
-      } else if (!difficultyExists) {
-        const updateDoc = {
-          $push: {
-            "categories.$.items": {
-              difficulty,
-              numQuestions: amtQuestions,
-              numCorrect: score,
-            },
-          },
-          $set: {
-            totalCorrect: updatedTotalCorrect,
-            totalQuestions: updatedTotalQuestions,
-          },
-        };
-
-        await TriviaData.updateOne(
-          { username: currentUser, "categories.name": category },
-          updateDoc
-        );
-      } else {
-        const updatedNumQuestions = existingNumQuestions + amtQuestions;
-        const updatedNumCorrect = existingNumCorrect + score;
-
-        const filter = {
-          username: currentUser,
-          "categories.name": category,
-        };
-
-        const updateDoc = {
-          $set: {
-            totalCorrect: updatedTotalCorrect,
-            totalQuestions: updatedTotalQuestions,
-            "categories.$.items.$[item].numQuestions": updatedNumQuestions,
-            "categories.$.items.$[item].numCorrect": updatedNumCorrect,
-          },
-        };
-
-        const options = {
-          arrayFilters: [{ "item.difficulty": difficulty }],
-        };
-
-        await TriviaData.updateOne(filter, updateDoc, options);
-      }
-
-      await TriviaData.updateOne(
-        { username: currentUser, "categories.name": category },
-        {
-          $set: {
-            "categories.$.items": userDoc.categories
-              .find((cat) => cat.name === category)
-              .items.sort(
-                (a, b) =>
-                  difficultyOrder[a.difficulty] - difficultyOrder[b.difficulty]
-              ),
-          },
-        }
-      );
-
-      res.json({
-        success: true,
-        message: "Data updated successfully.",
+    // find or create the given category
+    let categoryObj = categories.find(cat => cat.name === category);
+    if(!categoryObj){
+      categories.push({
+        name: category,
+        items: [{ difficulty, numQuestions: amtQuestions, numCorrect: score}]
       });
-    } catch (error) {
-      console.error("Error submitting data:", error);
-      //update all to be this format
-      res
-        .status(500)
-        .json({ success: false, message: "Internal Server Error" });
+    }else{
+      //find or create difficulty
+      let item = categoryObj.items.find(i => i.difficulty === difficulty);
+      if (!item){
+        //push the new quiz results into the category array
+        categoryObj.items.push({difficulty, numQuestions: amtQuestions, numCorrect: score});
+        
+      }else{
+        item.numQuestions += amtQuestions;
+        item.numCorrect += score;
+      }
+      // Sort items by difficulty order
+      const order = {easy: 1, medium: 2, hard: 3};
+      categoryObj.items.sort((a,b)=>order[a.difficulty]-order[b.difficulty]);
     }
-  } else {
-    return res.send("No Login");
+
+    totalQuestions += amtQuestions;
+    totalCorrect += score;
+    
+    await UserData.updateOne(
+      {username: username},
+      {$set: {totalQuestions, totalCorrect, categories}},
+      {upsert: true}
+    );
+
+    res.status(200).json({
+      success: true,
+      message: "Data updated successfully.",
+    });
+  } catch (error) {
+    console.error("Error submitting data:", error);
+    res.status(500).json({ success: false, message: "Internal Server Error" });
   }
+  
 }
 
 exports.stats = async (req, res) => {
+  const {username} = req.body;
   try {
-    const filter = {
-      username: currentUser,
-    };
-    const projection = {
-      "categories.name": 1,
-    };
-    const userDoc = await triviaData.findOne(filter, { projection });
-    console.log(userDoc.categories);
+    const userDoc = await UserData.findOne({username}, {categories: 1});
+    if(!userDoc){
+      return res.status(500).json([])
+    }
     res.json(userDoc.categories);
   } catch (error) {
-    console.error("Error fetching category items:", error);
+    res.status(500).json({message: "Error fetching categories"});
   }
 }
 
 exports.stats_category = async (req, res) => {
-  const { category } = req.body;
+  const { username, category } = req.body;
 
-  try {
-    const filter = {
-      username: currentUser,
-      "categories.name": category,
-    };
+  try { 
+    const userDoc = await UserData.findOne(
+      {username, "categories.name": category}, 
+      { "categories.$" : 1 }
+    );
+    if (!userDoc || !userDoc.categories || userDoc.categories.length === 0){
+      return res.json({});
+    }
+   
+    res.json(userDoc.categories[0]);
 
-    const projection = {
-      "categories.$": 1,
-    };
-    const userDoc = await triviaData.findOne(filter, { projection });
-    console.log(userDoc);
-    res.json(userDoc);
   } catch (error) {
     console.error("Error fetching category items:", error);
+    res.status(500).json({message: "Error fetching category items"});
   }
 }
