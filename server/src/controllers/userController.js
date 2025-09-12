@@ -57,7 +57,7 @@ exports.score =  async (req, res) => {
 }
 
 exports.stats = async (req, res) => {
-  const {username} = req.body;
+  const {username} = req.query;
   try {
     const userDoc = await UserData.findOne({username}, {categories: 1});
     if(!userDoc){
@@ -70,7 +70,7 @@ exports.stats = async (req, res) => {
 }
 
 exports.stats_category = async (req, res) => {
-  const { username, category } = req.body;
+  const { username, category } = req.query;
 
   try { 
     const userDoc = await UserData.findOne(

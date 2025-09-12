@@ -83,9 +83,3 @@ exports.login = async (req, res) => {
     console.error("Error submitting data", error);
   }
 }
-
-exports.logout = (req, res) => {
-  currentUser = "";
-  loggedIn = false;
-  res.send("Success");
-}

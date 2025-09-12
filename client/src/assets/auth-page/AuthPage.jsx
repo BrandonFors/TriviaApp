@@ -6,7 +6,7 @@ import { useNavigate } from "react-router-dom";
 function AuthPage() {
   // stores whether or not the form should be a signup or login
   const [isSignup, setIsSignup] = useState(false);
-  // stores the form data entered 
+  // stores the form data entered
   const [formData, setFormData] = useState({
     username: "",
     password: "",
@@ -39,18 +39,20 @@ function AuthPage() {
     try {
       setLoading(true);
       const endpoint = isSignup ? "/signup" : "/login";
-      const postData = {
-        username: formData.username,
-        password: formData.password,
-      };
+
       const response = await axios.post(
-        `http://localhost:8080${endpoint}`,
-        postData
+        `http://localhost:8080/auth/${endpoint}`,
+        {
+          username: formData.username,
+          password: formData.password,
+        }
       );
       if (!response.data.success) {
         setErrorMessage(response.data.message);
       }
       if (!isSignup && response.data.success) {
+        localStorage.setItem('token', response.data.token);
+        localStorage.setItem('username',formData.username);
         setNavHome(true);
       }
 

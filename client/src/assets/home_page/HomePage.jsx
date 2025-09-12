@@ -34,9 +34,10 @@ function HomePage() {
     if (!loggedIn) {
       navigate("/login");
     } else {
-      const response = await axios.get("http://localhost:8080/logout");
       setLoggedIn(false);
       setCurrentUser("");
+      localStorage.removeItem('token');
+      localStorage.removeItem('username');
     }
   };
   // nav to the stats page
@@ -44,19 +45,13 @@ function HomePage() {
     navigate(`/stats`);
   };
 
-  // on load, fetch any user data present on the server to see if they are logged in
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await axios.get("http://localhost:8080/home");
-        setLoggedIn(response.data.loggedIn);
-        setCurrentUser(response.data.currentUser);
-      } catch (error) {
-        console.error("Error fetching home data:", error);
-      }
-    };
-
-    fetchData();
+  // on load
+   useEffect(() => {
+    let username = localStorage.getItem('username');
+    if(username){
+      setCurrentUser(username);
+      setLoggedIn(true);
+    } 
   }, []);
 
 

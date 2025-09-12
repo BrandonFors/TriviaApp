@@ -26,7 +26,7 @@ function getIdByName(name) {
 exports.questions = async (req, res) => {
   try{
     await getCategories();
-    const { amount, category, difficulty } = req.body;
+    const { amount, category, difficulty } = req.query;
     const categoryId = getIdByName(category);
     const params = {
       amount,

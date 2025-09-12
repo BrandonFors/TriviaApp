@@ -17,12 +17,12 @@ function TriviaPage() {
   const [answerLoading, setAnswerLoading] = useState(false);
   // holds quiz questions
   const [questions, setQuestions] = useState([]);
+  // stores the answer key
+  const [answerKey, setAnswerKey] = useState([]);
   // holds info on what questions the user is on
   const [questionIndex, setQuestionIndex] = useState(0);
   // holds info on the difficulty of the quiz
   const [difficulty, setDifficulty] = useState("");
-  // tells whether the frontend is restoring quiz progress
-  const [restoringState, setRestoringState] = useState(true);
   // is triggered when exit is pressed, which triggers a useEffect to nav back to homepage. Is there a better way to handle this?
   const [shouldNavigate, setShouldNavigate] = useState(false);
   // gets category from url
@@ -32,17 +32,18 @@ function TriviaPage() {
 
   // handles getting questions from the backend
   const getQuestions = async (amount, difficulty) => {
+    console.log(amount);
+    console.log(difficulty);
+    console.log(category);
     try {
       setLoading(true);
-      const postData = {
-        amount,
-        category,
-        difficulty,
-      };
-      const response = await axios.post(
-        "http://localhost:8080/questions",
-        postData
+      const response = await axios.get(
+        "http://localhost:8080/trivia/questions",
+        {
+          params: { amount, category, difficulty },
+        }
       );
+      console.log(response.data);
       return response.data;
     } catch (error) {
       console.error("Error fetching questions:", error);
@@ -51,94 +52,40 @@ function TriviaPage() {
       setLoading(false);
     }
   };
-  //checks the user's input answer using the backend 
+  //checks the user's input answer using the backend
   const checkAnswer = async (questionIndex, userAnswer) => {
     setAnswerLoading(true);
-    try {
-      const postData = {
-        questionIndex,
-        userAnswer,
-      };
-      const response = await axios.post(
-        "http://localhost:8080/check-answer",
-        postData
-      );
-      console.log(response.data);
-      return response.data;
-    } catch (error) {
-      console.error("Error checking answer:", error);
-      return [];
-    } finally {
-      setAnswerLoading(false);
-    }
+    // implement answer logic
+    return null;
   };
-  // loads the user's quiz state if they reload the page for some reson
-  const loadState = async () => {
-    try {
-      const response = await axios.get("http://localhost:8080/load-state");
-      const savedState = response.data;
-      if (savedState) {
-        setSetupComplete(savedState.setupComplete);
-        setQuizOver(savedState.quizOver);
-        setQuestions(savedState.questions || []);
-        setQuestionIndex(savedState.questionIndex || 0);
-        setDifficulty(savedState.difficulty);
-      }
-    } catch (error) {
-      console.error("Error loading state from backend: ", error);
-    } finally {
-      setRestoringState(false);
-    }
-  };
-  //saves the user's quiz state
-  const saveState = async () => {
-    try {
-      const state = {
-        setupComplete,
-        quizOver,
-        questions,
-        questionIndex,
-        difficulty,
-      };
-      await axios.post("http://localhost:8080/save-state", state);
-    } catch (error) {
-      console.error("Error saving state to backend: ", error);
-    }
-  };
+
   // resets the users quiz state once the quiz is over
   const resetState = async () => {
-    try {
-      const state = {
-        setupComplete: false,
-        quizOver: false,
-        questions: [],
-        questionIndex: 0,
-        difficulty: "",
-      };
-      await axios.post("http://localhost:8080/save-state", state);
-    } catch (error) {
-      console.error("Error saving reset  state backend: ", error);
-    }
+    const state = {
+      setupComplete: false,
+      quizOver: false,
+      questions: [],
+      questionIndex: 0,
+      difficulty: "",
+    };
   };
 
   // submits the user's quiz score and details about the quiz
   const submitScore = async (score, amtQuestions, category, difficulty) => {
     try {
-      const postData = {
+      const token = localStorage.getItem("token");
+      const username = localStorage.getItem("username");
+      await axios.post("http://localhost:8080/user/score", {
+        headers: { Authorization: `Bearer ${token}` },
+        username,
         score,
         amtQuestions,
         category,
         difficulty,
-      };
-      await axios.post("http://localhost:8080/score", postData);
+      });
     } catch (error) {
       console.error("Error submitting score", error);
     }
-  };
-
-  // rests the quiz
-  const handlePopState = async () => {
-    resetState();
   };
 
   // handles when a quiz is started
@@ -146,27 +93,28 @@ function TriviaPage() {
     // fetches questions
     const data = await getQuestions(amount, difficulty);
     setDifficulty(difficulty);
-    setQuestions(data);
+    console.log(data);
+    setQuestions(data.questionArray);
+    setAnswerKey(data.answerKey);
     setSetupComplete(true);
   };
 
   // handles when the user submits an answer to a question
   const handleSubmitPressed = async (userAnswer) => {
-    const data = await checkAnswer(questionIndex, userAnswer);
-    if (data != []) {
-      setQuestions((prevQuestions) =>
-        prevQuestions.map((question, index) =>
-          index === questionIndex
-            ? {
-                ...question,
-                userAnswer: data.userAnswer,
-                correctAnswer: data.correctAnswer,
-                isCorrect: data.isCorrect,
-              }
-            : question
-        )
-      );
-    }
+    checkAnswer(questionIndex, userAnswer);
+
+    setQuestions((prevQuestions) =>
+      prevQuestions.map((question, index) =>
+        index === questionIndex
+          ? {
+              ...question,
+              userAnswer: data.userAnswer,
+              correctAnswer: data.correctAnswer,
+              isCorrect: data.isCorrect,
+            }
+          : question
+      )
+    );
   };
 
   const handleNextQuestionPressed = () => {
@@ -176,34 +124,17 @@ function TriviaPage() {
   const handleResultsPressed = () => {
     setQuizOver(true);
   };
+
   const handleExitPressed = async (score, amtQuestions) => {
     await submitScore(score, amtQuestions, category, difficulty);
     resetState();
     setShouldNavigate(true);
   };
 
-  // Reset state only when the back button is pressed
-  useEffect(() => {
-    window.addEventListener("popstate", handlePopState);
-    return () => {
-      window.removeEventListener("popstate", handlePopState);
-    };
-  }, []);''
-
-  // loads the state on page start
-  useEffect(() => {
-    setLoading(false);
-    setAnswerLoading(false);
-    loadState();
-  }, []);
-
-  // sends quiz state to the backend every half second. Is there a better way to do this?
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      saveState();
-    }, 500);
-    return () => clearTimeout(timer);
-  }, [setupComplete, quizOver, questions, questionIndex]);
+  // useEffect(() => {
+  //   setLoading(false);
+  //   setAnswerLoading(false);
+  // }, []);
 
   // navigates to home if shouldNavigate is true
   useEffect(() => {
@@ -211,11 +142,6 @@ function TriviaPage() {
       navigate("/");
     }
   }, [shouldNavigate]);
-
-  // displays spinner if loading state
-  if (restoringState) {
-    return <div className="spinner"></div>;
-  }
 
   return (
     <div>
@@ -231,7 +157,7 @@ function TriviaPage() {
           difficulty.charAt(0).toUpperCase() + difficulty.slice(1)
         } Difficulty`}</h2>
       )}
-{/* This container contains all the necesary UI steps for a quiz: 
+      {/* This container contains all the necesary UI steps for a quiz: 
         - A setup form for the user to select amt of questions and dificulty
         - A question form that will deliver the actual quiz one question at a time
         - A resutls form where the user can view their correct and incorrect answers
