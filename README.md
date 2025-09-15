@@ -1,6 +1,3 @@
-This site contains a React.js client and Node.js server. The fronthend client handles all quiz related display and user input logic. The server handles all quiz logic and stores
-various react component states in order to preserve the site states on refresh. In the future, user data will be created and stored on the server and a database will be added to preserve user data even on
-server shutdown.
+This site contains a React.js client, Node.js backend with Express and MongoDB (MERN stack). The fronthend client handles all quiz related display and quiz logic. The server handles interaction with the quiz question api as well as interaction with the Mongo database. 
 
-
-Currently fixing major issues with backend and handling of user/quiz data data. Also restructuring to not be a complete 400 line mess.
+The site contains login functionality and requires users to be logged in for quiz stat storage.
