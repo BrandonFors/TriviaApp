@@ -13,8 +13,6 @@ function TriviaPage() {
   const [quizOver, setQuizOver] = useState(false);
   // loading state for when the frontend is fetching questions
   const [loading, setLoading] = useState(false);
-  // loading state for when the user submits an answer to the backend
-  const [answerLoading, setAnswerLoading] = useState(false);
   // holds quiz questions
   const [questions, setQuestions] = useState([]);
   // stores the answer key
@@ -54,9 +52,9 @@ function TriviaPage() {
   };
   //checks the user's input answer using the backend
   const checkAnswer = async (questionIndex, userAnswer) => {
-    setAnswerLoading(true);
     // implement answer logic
-    return null;
+    console.log(answerKey[questionIndex]);
+    return userAnswer == answerKey[questionIndex];
   };
 
   // resets the users quiz state once the quiz is over
@@ -75,14 +73,16 @@ function TriviaPage() {
     try {
       const token = localStorage.getItem("token");
       const username = localStorage.getItem("username");
-      await axios.post("http://localhost:8080/user/score", {
-        headers: { Authorization: `Bearer ${token}` },
-        username,
-        score,
-        amtQuestions,
-        category,
-        difficulty,
-      });
+      if (token) {
+        await axios.post("http://localhost:8080/user/score", {
+          headers: { Authorization: `Bearer ${token}` },
+          username,
+          score,
+          amtQuestions,
+          category,
+          difficulty,
+        });
+      }
     } catch (error) {
       console.error("Error submitting score", error);
     }
@@ -92,8 +92,6 @@ function TriviaPage() {
   const handleStartPressed = async (amount, difficulty) => {
     // fetches questions
     const data = await getQuestions(amount, difficulty);
-    setDifficulty(difficulty);
-    console.log(data);
     setQuestions(data.questionArray);
     setAnswerKey(data.answerKey);
     setSetupComplete(true);
@@ -101,16 +99,16 @@ function TriviaPage() {
 
   // handles when the user submits an answer to a question
   const handleSubmitPressed = async (userAnswer) => {
-    checkAnswer(questionIndex, userAnswer);
+    let isCorrect = checkAnswer(questionIndex, userAnswer);
 
     setQuestions((prevQuestions) =>
       prevQuestions.map((question, index) =>
         index === questionIndex
           ? {
               ...question,
-              userAnswer: data.userAnswer,
-              correctAnswer: data.correctAnswer,
-              isCorrect: data.isCorrect,
+              userAnswer: userAnswer,
+              correctAnswer: answerKey[questionIndex].correctAnswer,
+              isCorrect: isCorrect,
             }
           : question
       )
@@ -130,11 +128,6 @@ function TriviaPage() {
     resetState();
     setShouldNavigate(true);
   };
-
-  // useEffect(() => {
-  //   setLoading(false);
-  //   setAnswerLoading(false);
-  // }, []);
 
   // navigates to home if shouldNavigate is true
   useEffect(() => {
@@ -173,7 +166,6 @@ function TriviaPage() {
             questions={questions}
             questionIndex={questionIndex}
             questionsLength={questions.length}
-            answerLoading={answerLoading}
             handleSubmitPressed={handleSubmitPressed}
             handleNextQuestionPressed={handleNextQuestionPressed}
             handleResultsPressed={handleResultsPressed}

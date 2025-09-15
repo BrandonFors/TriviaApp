@@ -21,11 +21,22 @@ function StatsPage() {
     setCurrentCategory(event.target.value);
   };
 
-  // fetches the available categories from the backend
+  // fetches the available categories from the backend for a given user
   useEffect(() => {
     const fetchAvailCategories = async () => {
-      const response = await axios.get("http://localhost:8080/stats");
-      setAvailCategories(response.data);
+      try{
+        const token = localStorage.getItem("token");
+        const username = localStorage.getItem("username");
+        const response = await axios.get("http://localhost:8080/user/stats",{
+          headers: { Authorization: `Bearer ${token}` },
+          params: {username}
+        });
+        
+        setAvailCategories(response.data);
+        setCategoryData(response.data);
+      }catch(error){
+        console.log("Failed to get available categories")
+      }
     };
     fetchAvailCategories();
   }, []);
@@ -33,14 +44,24 @@ function StatsPage() {
   // fetches the data for the current category selected
   useEffect(() => {
     const fetchCategoryData = async () => {
-      const data = {
-        category: currentCategory,
-      };
-      const response = await axios.post(
-        "http://localhost:8080/stats/category",
-        data
-      );
-      setCategoryData(response.data.categories);
+      try{
+        const token = localStorage.getItem("token");
+        const username = localStorage.getItem("username")
+        if(token){
+          const response = await axios.get(
+          "http://localhost:8080/user/stats/category",{
+            headers: { Authorization: `Bearer ${token}`},
+            params: {username, category:currentCategory}
+          }
+        );
+        setCategoryData([response.data]);
+        }
+        
+      }catch(error){
+        console.log("Failed to fetch category data.")
+      }
+     
+     
     };
     if (currentCategory !== "") {
       fetchCategoryData();
@@ -83,7 +104,7 @@ function StatsPage() {
           ))}
         </select>
       </div>
-      {/* displays the data for the selected categories */}
+      {/* displays the data for the selected category */}
       <div className="category-data">
         {categoryData.map((category, index) => (
           <StatsElement key={index} category={category} />

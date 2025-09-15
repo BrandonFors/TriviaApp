@@ -29,38 +29,37 @@ function QuestionForm(props) {
       <h2>{`Question ${props.questionIndex + 1}: ${decodeHtmlEntities(
         question.question
       )}`}</h2>
-      {!props.answerLoading && (
-        //contains buttons and creates buttons for every question answer, stylizes based on user clicks
-        <div className="button-container">
-          {!question.userAnswer &&
-            question.responses.map((response, index) => (
-              <button
-                key={index}
-                onClick={() => setAnswer(response)}
-                className={answer === response ? "selected" : ""}
-              >
+     
+      {/*contains buttons and creates buttons for every question answer, stylizes based on user clicks */}
+      <div className="button-container">
+        {!question.userAnswer &&
+          question.responses.map((response, index) => (
+            <button
+              key={index}
+              onClick={() => setAnswer(response)}
+              className={answer === response ? "selected" : ""}
+            >
+              {decodeHtmlEntities(response)}
+            </button>
+          ))}
+        {/* If the user has answered, style buttons based on the real correct answer and the user anser with red and green */}
+        {question.userAnswer &&
+          question.responses.map((response, index) => {
+            let buttonClass = "";
+            if (response === question.correctAnswer) {
+              buttonClass = "correct";
+            } else if (response === question.userAnswer) {
+              buttonClass = "incorrect";
+            }
+            return (
+              <button key={index} className={buttonClass}>
                 {decodeHtmlEntities(response)}
               </button>
-            ))}
-          {/* If the user has answered, style buttons based on the real correct answer and the user anser with red and green */}
-          {question.userAnswer &&
-            question.responses.map((response, index) => {
-              let buttonClass = "";
-              if (response === question.correctAnswer) {
-                buttonClass = "correct";
-              } else if (response === question.userAnswer) {
-                buttonClass = "incorrect";
-              }
-              return (
-                <button key={index} className={buttonClass}>
-                  {decodeHtmlEntities(response)}
-                </button>
-              );
-            })}
-        </div>
-      )}
-      {/* handles loading */}
-      {props.answerLoading && <div className="spinner"></div>}
+            );
+          })}
+      </div>
+    
+  
       {/* If the user has not answered, display a submit button */}
       {!question.userAnswer && answer !== "" && (
         <button
